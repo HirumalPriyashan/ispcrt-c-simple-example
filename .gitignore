@@ -1,0 +1,5 @@
+.vscode
+*.dev*.o
+*.so
+*_avx*.h
+*_sse4*.h
