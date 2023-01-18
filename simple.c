@@ -2,16 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Parameters {
-    float *vin;
-    float *vout;
-    int count;
-};
-
 static int run(const ISPCRTDeviceType device_type, const unsigned int SIZE) {
     float *vin = (float *)calloc(2 * SIZE, sizeof(float)), *vout = vin + SIZE;
     for (int i = 0; i < SIZE; i++)
-        vin[i] = i;
+        vin[i] = i + 1;
 
     ISPCRTDevice device = ispcrtGetDevice(device_type, 0);
 
@@ -20,13 +14,16 @@ static int run(const ISPCRTDeviceType device_type, const unsigned int SIZE) {
     ISPCRTMemoryView vin_dev = ispcrtNewMemoryView(device, vin, sizeof(float) * SIZE, &flags);
     ISPCRTMemoryView vout_dev = ispcrtNewMemoryView(device, vout, sizeof(float) * SIZE, &flags);
 
-    struct Parameters *p = (struct Parameters *)calloc(1, sizeof(struct Parameters));
+    size_t size = 2 * sizeof(float *) + sizeof(int);
+    void *vptr = calloc(1, sizeof(float *));
+    void **p = &vptr;
+    p[0] = (float*)ispcrtDevicePtr(vin_dev);
+    p[1] = calloc(1, sizeof(float *));
+    p[1] = (float*)ispcrtDevicePtr(vout_dev);
+    p[2] = calloc(1, (sizeof(int)));
+    *((int *)(p[2])) = SIZE;
 
-    p->vin = (float*)ispcrtDevicePtr(vin_dev);
-    p->vout = (float*)ispcrtDevicePtr(vout_dev);
-    p->count = SIZE;
-
-    ISPCRTMemoryView p_dev = ispcrtNewMemoryView(device, p, sizeof(struct Parameters), &flags);
+    ISPCRTMemoryView p_dev = ispcrtNewMemoryView(device, p, size, &flags);
 
     ISPCRTModuleOptions options = {};
     ISPCRTModule module = ispcrtLoadModule(device, "xe_simple", options);
@@ -40,9 +37,9 @@ static int run(const ISPCRTDeviceType device_type, const unsigned int SIZE) {
     ispcrtSync(queue);
 
     for (int i = 0; i < SIZE; i++) {
-        printf("%d: simple(%f): %f\n", i, vin[i], vout[i]);
+        printf("i:%d: simple(%f): %f\n", i, vin[i], vout[i]);
     }
-    free(vin), free(p);
+    free(vptr);
     return 0;
 }
 

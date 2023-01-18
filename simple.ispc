@@ -1,10 +1,3 @@
-struct Parameters {
-    float *vin;
-    float *vout;
-    int    count;
-};
-
-
 static void simple(uniform float vin[], uniform float vout[],
                    uniform int count) {
     foreach (index = 0 ... count) {
@@ -18,8 +11,8 @@ static void simple(uniform float vin[], uniform float vout[],
 }
 
 task void simple_ispc(void *uniform _p) {
-    Parameters *uniform p = (Parameters * uniform) _p;
-    simple(p->vin, p->vout, p->count);
+    void **uniform p = (void **uniform)_p;
+    simple((float *)(p[0]), (float *)(p[1]), *((int *)(p[2])));
 }
 
 #include "ispcrt.isph"

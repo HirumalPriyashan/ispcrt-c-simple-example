@@ -2,6 +2,10 @@
 
 This is a simple example of using ISPC runtime with C which is a modified verison of simple xpu exmple of ISPC example set.
 
+## About the implementation
+
+This implementation try to use ispcrt without using `struct`.
+
 ## Build instructions
 
 Compile ISPC kernel for CPU:
