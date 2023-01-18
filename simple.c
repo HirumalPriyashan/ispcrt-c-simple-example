@@ -5,7 +5,7 @@
 static int run(const ISPCRTDeviceType device_type, const unsigned int SIZE) {
     float *vin = (float *)calloc(2 * SIZE, sizeof(float)), *vout = vin + SIZE;
     for (int i = 0; i < SIZE; i++)
-        vin[i] = i + 1;
+        vin[i] = i;
 
     ISPCRTDevice device = ispcrtGetDevice(device_type, 0);
 
