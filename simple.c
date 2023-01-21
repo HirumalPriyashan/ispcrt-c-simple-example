@@ -15,10 +15,11 @@ static int run(const ISPCRTDeviceType device_type, const unsigned int SIZE) {
     ISPCRTMemoryView vout_dev = ispcrtNewMemoryView(device, vout, sizeof(float) * SIZE, &flags);
 
     size_t size = 2 * sizeof(float *) + sizeof(int);
-    void *vptr = calloc(1, sizeof(float *));
-    void **p = &vptr;
+    // void *vptr = calloc(1, sizeof(float *));
+    // void **p = &vptr;
+    void **p = (void **)calloc(1, size);
     p[0] = (float*)ispcrtDevicePtr(vin_dev);
-    p[1] = calloc(1, sizeof(float *));
+    // p[1] = calloc(1, sizeof(float *));
     p[1] = (float*)ispcrtDevicePtr(vout_dev);
     p[2] = calloc(1, (sizeof(int)));
     *((int *)(p[2])) = SIZE;
@@ -39,7 +40,7 @@ static int run(const ISPCRTDeviceType device_type, const unsigned int SIZE) {
     for (int i = 0; i < SIZE; i++) {
         printf("i:%d: simple(%f): %f\n", i, vin[i], vout[i]);
     }
-    free(vptr);
+    free(p);
     return 0;
 }
 
