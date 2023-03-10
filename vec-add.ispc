@@ -1,14 +1,15 @@
-task void add(uniform float a[], uniform float b[], uniform float c[]) {
-    c[taskIndex0] = a[taskIndex0] + b[taskIndex0];
+task void foo_inner(uniform int32 *uniform a, uniform int32 const *uniform b, uniform int32 const N)
+{
+  a[((uniform int32) taskIndex0)] = a[((uniform int32) taskIndex0)] * (b[((uniform int32) taskIndex0)] + 1);
 }
 
 task void main_ispc(void *uniform _p)
 {
-    void **uniform p = (void **uniform)_p;
-    uniform int dim0 = *((int *)(p[3]));
-    uniform int dim1 = *((int *)(p[4]));
-    uniform int dim2 = *((int *)(p[5]));
-    launch[dim0, dim1, dim2] add((float *uniform)(p[0]), (float *uniform)(p[1]), (float *uniform)(p[2]));
+  void **uniform p = (void **uniform)_p;
+  uniform int dim0 = *((int *)(p[3]));
+  uniform int dim1 = *((int *)(p[4]));
+  uniform int dim2 = *((int *)(p[5]));
+  launch[dim0, dim1, dim2] foo_inner( (int32 *uniform)(p[0]),  (int32 *uniform)(p[1]),  *((int32 *)(p[2])));
 }
 
 #include "ispcrt.isph"
