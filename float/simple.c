@@ -34,13 +34,7 @@ static int run(const ISPCRTDeviceType device_type, unsigned int N) {
     p[3] = &dim0;
     p[4] = &dim1;
     p[5] = &dim2;
-    for (int i = 0; i < 6; i++) {
-    if (i < 2) {
-        printf("p[%d] = %p\n", i, p[i]);
-    } else {
-        printf("p[%d] = %d\n", i, *(int *)p[i]);
-    }
-}
+
     ISPCRTMemoryView p_dev = ispcrtNewMemoryView(device, p, size, &flags);
 
     ISPCRTModuleOptions options = {};
