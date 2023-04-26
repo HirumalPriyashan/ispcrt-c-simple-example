@@ -13,15 +13,10 @@ jobs:
     - uses: actions/checkout@v3
     - name: Prepare ISPC
       run: |
-        cd /opt
-        wget https://github.com/ispc/ispc/releases/download/v1.18.0/ispc-v1.18.0-linux.tar.gz
-        tar -xf ispc-v1.18.0-linux.tar.gz
-        mv ispc-v1.18.0-linux ispc
+        wget -P /tmp -nv https://github.com/ispc/ispc/releases/download/v1.18.0/ispc-v1.18.0-linux.tar.gz
+        tar -xf /tmp/ispc-v1.18.0-linux.tar.gz -C /opt/ 
+        ls /opt/
     - name: Run ISPC
       run: |
-        export PATH=$PATH:/opt/ispc/bin
-        ispc -I /opt/ispc/include/ispcrt -g -o simple.dev.o simple.ispc
-        /usr/bin/cc -fPIC -shared -o libsimple.so simple.dev.o
-        /usr/bin/cc simple.c -fPIE -g -o host_simple -lispcrt -Wl,-rpath,/opt/ispc/lib64
-        ./host_simple
+        export PATH=$PATH:/opt/ispc-v1.18.0-linux/bin
         
