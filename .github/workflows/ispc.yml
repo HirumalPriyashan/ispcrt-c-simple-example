@@ -20,6 +20,7 @@ jobs:
     - name: Run ISPC
       run: |
         export PATH=$PATH:/opt/ispc-v1.18.0-linux/bin
+        which omp.h
         ls /usr/
         echo -------
         ls /usr/local/
