@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ "master" ]
 env:
-  LD_LIBRARY_PATH: "/opt/ispc-v1.18.0-linux/lib64"
+  LD_LIBRARY_PATH: "/opt/ispc-v1.18.0-linux/lib64/ispcrt"
 jobs:
   build:
     runs-on: ubuntu-latest
