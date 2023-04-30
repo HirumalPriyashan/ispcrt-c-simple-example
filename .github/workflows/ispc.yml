@@ -24,9 +24,9 @@ jobs:
         echo -------
         ls /usr/local/
         echo -------
-        ls /usr/local/opt/
+        ls /usr/lib
         echo -------
-        ls /usr/local/opt/llvm/lib
+        ls /usr/lib/llvm/lib
         echo -------
         ls /opt/
         ispc -I /opt/ispc-v1.18.0-linux/include/ispcrt -g -o simple.dev.o simple.ispc
