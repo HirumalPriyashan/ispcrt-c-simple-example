@@ -26,10 +26,12 @@ jobs:
         ls /usr/local/
         echo -------
         ls /usr/lib
-        echo -------
-        ls /usr/lib/llvm/lib
-        echo -------
-        ls /opt/
+        echo -------12
+        ls /usr/lib/llvm-12
+        echo -------13
+        ls /usr/lib/llvm-13
+        echo -------14
+        ls /usr/lib/llvm-14
         ispc -I /opt/ispc-v1.18.0-linux/include/ispcrt -g -o simple.dev.o simple.ispc
         /usr/bin/cc -fPIC -shared -o libsimple.so simple.dev.o
         /usr/bin/cc simple.c -fPIE -g -o host_simple -lispcrt -Wl,-rpath,/opt/ispc/lib64
