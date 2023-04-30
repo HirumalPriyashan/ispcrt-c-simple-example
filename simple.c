@@ -1,54 +1,50 @@
-#include "ispcrt.h"
+#include "vec-add.h"
+#include <ispcrt/ispcrt.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Parameters {
-    float *vin;
-    float *vout;
-    int count;
-};
+static ISPCRTError rt_error = ISPCRT_NO_ERROR;
+static char *err_message = NULL;
+static void ispcrt_error(ISPCRTError err_code, const char *message) {
+  rt_error = err_code;
+  err_message = (char *)message;
+}
 
-static int run(const ISPCRTDeviceType device_type, const unsigned int SIZE) {
-    float *vin = (float *)calloc(2 * SIZE, sizeof(float)), *vout = vin + SIZE;
-    for (int i = 0; i < SIZE; i++)
-        vin[i] = i;
+static int run(const ISPCRTDeviceType device_type, int rows, int cols) {
+  ispcrtSetErrorFunc(ispcrt_error);
 
-    ISPCRTDevice device = ispcrtGetDevice(device_type, 0);
+  int a[256], b[256];
+  const int n = rows * cols;
+  for (unsigned i = 0; i < n; i++)
+    a[i] = 2 * n - i, b[i] = i;
+  ISPCRTDevice device = ispcrtGetDevice(device_type, 0);
+  ISPCRTTaskQueue queue = ispcrtNewTaskQueue(device);
 
-    ISPCRTNewMemoryViewFlags flags;
-    flags.allocType = ISPCRT_ALLOC_TYPE_DEVICE;
-    ISPCRTMemoryView vin_dev = ispcrtNewMemoryView(device, vin, sizeof(float) * SIZE, &flags);
-    ISPCRTMemoryView vout_dev = ispcrtNewMemoryView(device, vout, sizeof(float) * SIZE, &flags);
+  ISPCRTNewMemoryViewFlags flags;
+  flags.allocType = ISPCRT_ALLOC_TYPE_DEVICE;
+  ISPCRTMemoryView a_dev =
+      ispcrtNewMemoryView(device, a, sizeof(int) * n, &flags);
+  ISPCRTMemoryView b_dev =
+      ispcrtNewMemoryView(device, b, sizeof(int) * n, &flags);
+  ispcrtCopyToDevice(queue, a_dev);
+  ispcrtCopyToDevice(queue, b_dev);
 
-    struct Parameters *p = (struct Parameters *)calloc(1, sizeof(struct Parameters));
-
-    p->vin = (float*)ispcrtDevicePtr(vin_dev);
-    p->vout = (float*)ispcrtDevicePtr(vout_dev);
-    p->count = SIZE;
-
-    ISPCRTMemoryView p_dev = ispcrtNewMemoryView(device, p, sizeof(struct Parameters), &flags);
-
-    ISPCRTModuleOptions options = {};
-    ISPCRTModule module = ispcrtLoadModule(device, "xe_simple", options);
-    ISPCRTKernel kernel = ispcrtNewKernel(device, module, "simple_ispc");
-
-    ISPCRTTaskQueue queue = ispcrtNewTaskQueue(device);
-    ispcrtCopyToDevice(queue, p_dev);
-    ispcrtCopyToDevice(queue, vin_dev);
-    void *res = ispcrtLaunch1D(queue, kernel, p_dev, 1);
-    ispcrtCopyToHost(queue, vout_dev);
-    ispcrtSync(queue);
-
-    for (int i = 0; i < SIZE; i++) {
-        printf("%d: simple(%f): %f\n", i, vin[i], vout[i]);
-    }
-    free(vin), free(p);
-    return 0;
+  size_t size = 4 * sizeof(void *);
+  void **p = (void **)calloc(1, size);
+  p[0] = ispcrtDevicePtr(a_dev);
+  p[1] = ispcrtDevicePtr(b_dev);
+  p[2] = &rows;
+  p[3] = &cols;
+  nomp_ispc_foo(p);
+  //   foo(a, b, rows, cols);
+  for (unsigned i = 0; i < n; i++)
+    printf("%d %s", a[i], (i % cols == cols - 1) ? "\n" : "");
+  free(p);
+  return 0;
 }
 
 int main(int argc, char *argv[]) {
-    unsigned int SIZE = 16;
-
-    int success = run(ISPCRT_DEVICE_TYPE_CPU, SIZE);
-    return success;
+  int success = run(ISPCRT_DEVICE_TYPE_CPU, 32, 4);
+  success = run(ISPCRT_DEVICE_TYPE_CPU, 10, 16);
+  return success;
 }
