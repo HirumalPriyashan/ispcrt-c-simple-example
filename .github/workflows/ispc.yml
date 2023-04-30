@@ -21,9 +21,13 @@ jobs:
       run: |
         export PATH=$PATH:/opt/ispc-v1.18.0-linux/bin
         ls /usr/
+        echo -------
         ls /usr/local/
+        echo -------
         ls /usr/local/opt/
+        echo -------
         ls /usr/local/opt/llvm/lib
+        echo -------
         ls /opt/
         ispc -I /opt/ispc-v1.18.0-linux/include/ispcrt -g -o simple.dev.o simple.ispc
         /usr/bin/cc -fPIC -shared -o libsimple.so simple.dev.o
