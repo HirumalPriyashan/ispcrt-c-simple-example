@@ -41,7 +41,7 @@ jobs:
         sudo apt-get install unzip
         wget -P /tmp -nv https://github.com/oneapi-src/level-zero/archive/refs/heads/master.zip
         ls /tmp
-        unzip master.zip
+        unzip /tmp/master.zip
         cd /tmp/master
         mkdir build
         cd build
