@@ -17,8 +17,8 @@ jobs:
         shell: bash -l {0}
     strategy:
       matrix:
-        # compiler: [gcc-9, gcc-10, clang-10, clang-11, clang-12]
         compiler: [gcc-10, clang-12]
+        
       fail-fast: false
     name: "${{ matrix.compiler }}"
     steps:
@@ -26,14 +26,18 @@ jobs:
     - name: Prepare ISPC
       run: |
         wget -P /tmp -nv https://github.com/ispc/ispc/releases/download/v1.18.0/ispc-v1.18.0-linux.tar.gz
-        tar -xf /tmp/ispc-v1.18.0-linux.tar.gz -C /opt/ 
+        tar -xf /tmp/ispc-v1.18.0-linux.tar.gz -C /opt/
+        sudo mv /opt/ispc-v1.18.0-linux/include/ispcrt /usr/local/include
+        wget -P /tmp -nv https://github.com/oneapi-src/level-zero/releases/download/v1.11.0/level-zero_1.11.0+u22.04_amd64.deb
+        # tar -xf /tmp/level-zero-1.11.0_win-sdk.zip -C /opt/
+        # sudo mv /opt/level-zero-1.11.0_win-sdk/include/level_zero/usr/local/include
+        sudo dpkg -i /tmp/level-zero_1.11.0+u22.04_amd64.deb.deb
     - name: Install dependencies
       run: |
         sudo apt-get update && sudo apt-get install -y libomp-dev
         sudo ln -s /usr/lib/llvm-14/lib/libomp.so  /lib/
     - name: Run ISPC
       run: |
-        export PATH=$PATH:/opt/ispc-v1.18.0-linux/bin
         mkdir -p build && cd build
         cmake ..
         make
