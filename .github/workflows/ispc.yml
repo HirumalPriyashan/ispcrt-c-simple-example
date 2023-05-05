@@ -30,6 +30,7 @@ jobs:
     - name: Run ISPC
       run: |
         mkdir -p build && cd build
+        export ispcrt_DIR=/opt/spc-v1.18.0-linux/lib64/ispcrt
         cmake ..
         make
         ./ispc-vec-add
