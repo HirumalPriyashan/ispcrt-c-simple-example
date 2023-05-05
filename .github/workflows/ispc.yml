@@ -40,7 +40,7 @@ jobs:
         #dpkg -s level-zero
         sudo apt-get zip unzip
         wget -P /tmp -nv https://github.com/oneapi-src/level-zero/archive/refs/heads/master.zip
-        ls
+        ls /tmp
         unzip level-zero-master.zip
         cd /tmp/level-zero-master
         mkdir build
