@@ -8,7 +8,7 @@ on:
 env:
   LD_LIBRARY_PATH: "/opt/ispc-v1.18.0-linux/lib64"
   ispcrt_DIR: "/opt/ispc-v1.18.0-linux/lib64/cmake/ispcrt-1.18.0"
-  ISPC_EXECUTABLE: "/opt/ispc-v1.18.0-linux/bin"
+  ISPC_EXECUTABLE: "/opt/ispc-v1.18.0-linux/bin/ispc"
 jobs:
   build:
     runs-on: ubuntu-latest
