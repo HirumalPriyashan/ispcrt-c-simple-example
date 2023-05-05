@@ -24,7 +24,7 @@ jobs:
         shell: bash -l {0}
     strategy:
       matrix:
-        compiler: [gcc-10, clang-12]
+        compiler: [gcc-10]
         
       fail-fast: false
     name: "${{ matrix.compiler }}"
@@ -35,13 +35,17 @@ jobs:
         wget -P /tmp -nv https://github.com/ispc/ispc/releases/download/v1.18.0/ispc-v1.18.0-linux.tar.gz
         tar -xf /tmp/ispc-v1.18.0-linux.tar.gz -C /opt/
         sudo mv /opt/ispc-v1.18.0-linux/include/ispcrt /usr/local/include
-        wget -P /tmp -nv https://github.com/oneapi-src/level-zero/releases/download/v1.11.0/level-zero_1.11.0+u22.04_amd64.deb
-        wget -P /tmp -nv https://github.com/oneapi-src/level-zero/releases/download/v1.11.0/level-zero-1.11.0_win-sdk.zip
-        tar -xf /tmp/level-zero-1.11.0_win-sdk.zip -C /opt/
-        sudo mv /opt/level-zero-1.11.0_win-sdk/include/level_zero /usr/local/include
-        sudo mv /opt/level-zero-1.11.0_win-sdk/include/level_zero /usr/local/include
-        sudo dpkg -i /tmp/level-zero_1.11.0+u22.04_amd64.deb
-        dpkg -s level-zero
+        #wget -P /tmp -nv https://github.com/oneapi-src/level-zero/releases/download/v1.11.0/level-zero_1.11.0+u22.04_amd64.deb
+        #sudo dpkg -i /tmp/level-zero_1.11.0+u22.04_amd64.deb
+        #dpkg -s level-zero
+        sudo apt-get git
+        cd /tmp/
+        git clone /https://github.com/oneapi-src/level-zero.git
+        cd level-zero
+        mkdir build
+        cd build
+        cmake ..
+        cmake --build . --config Release --target install
     - name: Install dependencies
       run: |
         sudo apt-get update && sudo apt-get install -y libomp-dev
