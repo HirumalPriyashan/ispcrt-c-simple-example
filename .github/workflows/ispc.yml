@@ -1,0 +1,64 @@
+name: ISPC CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled'
+        required: false
+        default: true
+env:
+  LD_LIBRARY_PATH: "/opt/ispc-v1.18.0-linux/lib64"
+  ispcrt_DIR: "/opt/ispc-v1.18.0-linux/lib64/cmake/ispcrt-1.18.0"
+  ISPC_EXECUTABLE: "/opt/ispc-v1.18.0-linux/bin/ispc"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+    strategy:
+      matrix:
+        compiler: [gcc-10]
+        
+      fail-fast: false
+    name: "${{ matrix.compiler }}"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Prepare ISPC
+      run: |
+        wget -P /tmp -nv https://github.com/ispc/ispc/releases/download/v1.18.0/ispc-v1.18.0-linux.tar.gz
+        tar -xf /tmp/ispc-v1.18.0-linux.tar.gz -C /opt/
+        sudo mv /opt/ispc-v1.18.0-linux/include/ispcrt /usr/local/include
+        #wget -P /tmp -nv https://github.com/oneapi-src/level-zero/releases/download/v1.11.0/level-zero_1.11.0+u22.04_amd64.deb
+        #sudo dpkg -i /tmp/level-zero_1.11.0+u22.04_amd64.deb
+        #dpkg -s level-zero
+        sudo apt-get install unzip
+        wget -P /tmp -nv https://github.com/oneapi-src/level-zero/archive/refs/heads/master.zip
+        ls /tmp
+        unzip /tmp/master.zip
+        ls /tmp
+        cd /tmp/master
+        mkdir build
+        cd build
+        cmake ..
+        cmake --build . --config Release --target install
+    - name: Install dependencies
+      run: |
+        sudo apt-get update && sudo apt-get install -y libomp-dev
+        sudo ln -s /usr/lib/llvm-14/lib/libomp.so  /lib/
+    - name: Run ISPC
+      run: |
+        export PATH=$PATH:/opt/ispc-v1.18.0-linux/bin
+        mkdir -p build && cd build
+        cmake ..
+        make
+        ./ispc-vec-add
+    - name: Block to allow inspecting failures
+      run: sleep 30m
+      if: ${{ failure() && inputs.debug_enabled }}
