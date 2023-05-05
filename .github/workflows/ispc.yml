@@ -28,7 +28,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update && sudo apt-get install -y libomp-dev
-        ln -s /usr/lib/llvm-14/lib/libomp.so  /lib/
+        sudo ln -s /usr/lib/llvm-14/lib/libomp.so  /lib/
     - name: Run ISPC
       run: |
         mkdir -p build && cd build
