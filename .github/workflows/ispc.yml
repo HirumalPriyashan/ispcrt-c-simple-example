@@ -26,10 +26,12 @@ jobs:
         wget -P /tmp -nv https://github.com/ispc/ispc/releases/download/v1.18.0/ispc-v1.18.0-linux.tar.gz
         tar -xf /tmp/ispc-v1.18.0-linux.tar.gz -C /opt/ 
     - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y libomp-dev
+      run: |
+        sudo apt-get update && sudo apt-get install -y libomp-dev
+        ln -s /usr/lib/llvm-14/lib/libomp.so  /lib/
     - name: Run ISPC
       run: |
         mkdir -p build && cd build
-        cmake .. -Dispcrt_DIR=/opt/ispc-v1.18.0-linux/lib64/ispcrt
+        cmake ..
         make
         ./ispc-vec-add
