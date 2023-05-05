@@ -42,6 +42,7 @@ jobs:
         wget -P /tmp -nv https://github.com/oneapi-src/level-zero/archive/refs/heads/master.zip
         ls /tmp
         unzip /tmp/master.zip
+        ls /tmp
         cd /tmp/master
         mkdir build
         cd build
