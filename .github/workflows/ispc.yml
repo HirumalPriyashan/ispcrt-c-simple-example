@@ -30,8 +30,6 @@ jobs:
     name: "${{ matrix.compiler }}"
     steps:
     - uses: actions/checkout@v3
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3.13
     - name: Prepare ISPC
       run: |
         wget -P /tmp -nv https://github.com/ispc/ispc/releases/download/v1.18.0/ispc-v1.18.0-linux.tar.gz
@@ -52,6 +50,8 @@ jobs:
         cmake ..
         make
         ./ispc-vec-add
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3.13
     - name: Block to allow inspecting failures
       run: sleep 30m
       if: ${{ failure() && inputs.debug_enabled }}
