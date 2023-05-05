@@ -38,11 +38,11 @@ jobs:
         #wget -P /tmp -nv https://github.com/oneapi-src/level-zero/releases/download/v1.11.0/level-zero_1.11.0+u22.04_amd64.deb
         #sudo dpkg -i /tmp/level-zero_1.11.0+u22.04_amd64.deb
         #dpkg -s level-zero
-        sudo apt-get zip unzip
+        sudo apt-get install unzip
         wget -P /tmp -nv https://github.com/oneapi-src/level-zero/archive/refs/heads/master.zip
         ls /tmp
-        unzip level-zero-master.zip
-        cd /tmp/level-zero-master
+        unzip master.zip
+        cd /tmp/master
         mkdir build
         cd build
         cmake ..
