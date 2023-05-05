@@ -43,6 +43,8 @@ jobs:
       run: |
         sudo apt-get update && sudo apt-get install -y libomp-dev
         sudo ln -s /usr/lib/llvm-14/lib/libomp.so  /lib/
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3.13
     - name: Run ISPC
       run: |
         export PATH=$PATH:/opt/ispc-v1.18.0-linux/bin
@@ -50,8 +52,6 @@ jobs:
         cmake ..
         make
         ./ispc-vec-add
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3.13
     - name: Block to allow inspecting failures
       run: sleep 30m
       if: ${{ failure() && inputs.debug_enabled }}
