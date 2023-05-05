@@ -5,6 +5,13 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled'
+        required: false
+        default: true
 env:
   LD_LIBRARY_PATH: "/opt/ispc-v1.18.0-linux/lib64"
   ispcrt_DIR: "/opt/ispc-v1.18.0-linux/lib64/cmake/ispcrt-1.18.0"
@@ -23,6 +30,9 @@ jobs:
     name: "${{ matrix.compiler }}"
     steps:
     - uses: actions/checkout@v3
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3.13
+      if: ${{ inputs.debug_enabled }}
     - name: Prepare ISPC
       run: |
         wget -P /tmp -nv https://github.com/ispc/ispc/releases/download/v1.18.0/ispc-v1.18.0-linux.tar.gz
@@ -43,3 +53,6 @@ jobs:
         cmake ..
         make
         ./ispc-vec-add
+    - name: Block to allow inspecting failures
+      run: sleep 30m
+      if: ${{ failure() && inputs.debug_enabled }}
