@@ -7,6 +7,7 @@ on:
     branches: [ "master" ]
 env:
   LD_LIBRARY_PATH: "/opt/ispc-v1.18.0-linux/lib64/ispcrt"
+  ispcrt_DIR: "/opt/ispc-v1.18.1-linux/lib64/cmake/ispcrt-1.18.1"
 jobs:
   build:
     runs-on: ubuntu-latest
