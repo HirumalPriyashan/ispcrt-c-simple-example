@@ -38,6 +38,7 @@ jobs:
         sudo ln -s /usr/lib/llvm-14/lib/libomp.so  /lib/
     - name: Run ISPC
       run: |
+        export PATH=$PATH:/opt/ispc-v1.18.0-linux/bin
         mkdir -p build && cd build
         cmake ..
         make
