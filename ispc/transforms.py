@@ -4,7 +4,6 @@ import loopy as lp
 
 LOOPY_LANG_VERSION = (2018, 2)
 
-
 def foo(knl, context):
     backend = context["backend"]
     split_size = 8 if (backend == "ispc") else 32
